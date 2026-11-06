@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Print stock register</title>
+<style>
+body{font-family:Arial,sans-serif;color:#111;margin:24px;font-size:12px}h1{margin:0 0 5px;font-size:21px}h2{font-size:15px;margin:22px 0 8px}.meta{margin:0 0 18px;color:#444}table{border-collapse:collapse;width:100%;margin-bottom:14px}th,td{border:1px solid #777;padding:7px;text-align:left}th{background:#eee}.right{text-align:right}.actions{margin-bottom:16px}@media print{body{margin:10mm}.no-print{display:none!important}th{background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}h2{break-after:avoid}tr{break-inside:avoid}}
+</style></head><body>
+<div class="actions no-print"><button onclick="window.print()">Print / Save as PDF</button> <button onclick="window.close()">Close</button></div>
+<h1>MESS ACCOUNT MANAGEMENT</h1><div class="meta">Stock Register · Printed: {{ printed_at|date:"d M Y, h:i A" }}</div>
+<h2>Current stock balance</h2><table><thead><tr><th>Sl. No.</th><th>Item</th><th>Unit</th><th class="right">Balance quantity</th><th class="right">Average unit cost (₹)</th><th class="right">Stock value (₹)</th><th class="right">Reorder level</th></tr></thead><tbody>
+{% for i in items %}<tr><td>{{ forloop.counter }}</td><td>{{ i.name }}</td><td>{{ i.unit }}</td><td class="right">{{ i.quantity|floatformat:3 }}</td><td class="right">{{ i.average_unit_cost|floatformat:2 }}</td><td class="right">{{ i.stock_value|floatformat:2 }}</td><td class="right">{{ i.reorder_level|floatformat:3 }}</td></tr>{% empty %}<tr><td colspan="7">No stock items recorded.</td></tr>{% endfor %}
+</tbody><tfoot><tr><th colspan="5">Total balance stock value</th><th class="right">₹{{ total|floatformat:2 }}</th><th></th></tr></tfoot></table>
+<h2>Recent stock additions (latest 200 entries)</h2><table><thead><tr><th>Sl. No.</th><th>Date</th><th>Item</th><th class="right">Quantity added</th><th class="right">Unit cost (₹)</th><th class="right">Total value (₹)</th><th>Notes</th></tr></thead><tbody>
+{% for a in additions %}<tr><td>{{ forloop.counter }}</td><td>{{ a.date|date:"d M Y" }}</td><td>{{ a.item.name }}</td><td class="right">{{ a.quantity|floatformat:3 }} {{ a.item.unit }}</td><td class="right">{{ a.unit_cost|floatformat:2 }}</td><td class="right">{{ a.total_cost|floatformat:2 }}</td><td>{{ a.notes|default:"—" }}</td></tr>{% empty %}<tr><td colspan="7">No stock additions recorded.</td></tr>{% endfor %}
+</tbody></table><p>Stock value is calculated using current quantity × weighted-average unit cost.</p></body></html>

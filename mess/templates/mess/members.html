@@ -1,0 +1,22 @@
+{% extends 'mess/base.html' %}
+{% block title %}Dining members register{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="actions"><h2 style="margin-right:auto">Dining members register</h2><a class="btn" href="{% url 'member_add' %}">+ Add member</a></div>
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:16px;margin-bottom:18px">
+    <h3 style="margin:0 0 8px">Add members using Excel</h3>
+    <p class="muted">Upload an Excel .xlsx file. Existing member numbers are skipped to prevent duplicates. Required columns are <b>member_no</b> and <b>name</b>.</p>
+    <p><a class="btn secondary" href="{% url 'member_excel_template' %}">Download Excel template</a></p>
+    <form method="post" action="{% url 'member_import_excel' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="field"><label for="excel_file">Choose Excel workbook (.xlsx)</label><input id="excel_file" type="file" name="excel_file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required></div>
+      <button class="btn" type="submit">Upload and import members</button>
+    </form>
+    <p class="muted">Columns: member_no, name, designation, active (Yes/No), joined_on (YYYY-MM-DD). The first worksheet is imported.</p>
+  </div>
+  <div class="table-wrap"><table><tr><th>Member no.</th><th>Name</th><th>Designation</th><th>Joined</th><th>Status</th></tr>
+    {% for m in members %}<tr><td>{{ m.member_no }}</td><td>{{ m.name }}</td><td>{{ m.designation|default:'—' }}</td><td>{{ m.joined_on }}</td><td>{% if m.active %}Active{% else %}Inactive{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="5">No members yet. Add members to start attendance marking.</td></tr>{% endfor %}
+  </table></div>
+</div>
+{% endblock %}

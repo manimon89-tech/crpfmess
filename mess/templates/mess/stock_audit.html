@@ -1,0 +1,32 @@
+{% extends 'mess/base.html' %}
+{% block title %}Date-wise Stock Audit{% endblock %}
+{% block content %}
+<div class="panel no-print">
+  <h2>Date-wise Stock Entry & Consumption Audit</h2>
+  <p class="muted">Filter by date range and item. The report starts from the 26th of the accounting period and shows opening stock, stock received, consumption, sold ration, and the running balance for each item.</p>
+  <form method="get" class="actions" style="align-items:end">
+    <div><label for="start">From date</label><input id="start" type="date" name="start" value="{{ start|date:'Y-m-d' }}" required></div>
+    <div><label for="end">To date</label><input id="end" type="date" name="end" value="{{ end|date:'Y-m-d' }}" required></div>
+    <div><label for="item">Item</label><select id="item" name="item"><option value="all" {% if selected_item == 'all' %}selected{% endif %}>All items</option>{% for i in items %}<option value="{{ i.id }}" {% if selected_item == i.id|stringformat:'s' %}selected{% endif %}>{{ i.name }}</option>{% endfor %}</select></div>
+    <button class="btn" type="submit">View report</button>
+    <button class="btn secondary" type="button" onclick="window.print()">Print / Save PDF</button>
+  </form>
+</div>
+<div class="panel">
+  <div class="actions"><h2 style="margin-right:auto">Stock Movement Audit Register</h2><div><strong>Period:</strong> {{ start|date:'d M Y' }} – {{ end|date:'d M Y' }}</div></div>
+  <p class="muted">Printed on {{ printed_at|date:'d M Y, H:i' }}. Quantities are shown in each item's unit.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Date</th><th>Item</th><th>Stock In / Opening Balance</th><th>Stock Out / Consumption / Sold ration</th><th>Running Balance</th></tr></thead>
+    <tbody>{% for r in ledger %}<tr>
+      <td>{{ r.date|date:'d M Y' }}</td>
+      <td>{{ r.item.name }} ({{ r.item.unit }}){% if r.is_opening %}<br><strong>Opening balance</strong>{% endif %}</td>
+      <td>{% if r.quantity_in %}{{ r.quantity_in|floatformat:3 }}{% else %}—{% endif %}</td>
+      <td>{% if r.quantity_out %}{{ r.quantity_out|floatformat:3 }}{% else %}—{% endif %}</td>
+      <td><strong>{{ r.balance|floatformat:3 }}</strong></td>
+    </tr>{% empty %}<tr><td colspan="7">No stock items or movements found for this report.</td></tr>{% endfor %}</tbody>
+    
+  </table></div>
+  <p class="muted" style="margin-top:14px">Audit note: the opening balance is shown as Stock In on the first day of the selected period. The default accounting period starts on the 26th and ends on the 25th.</p>
+</div>
+<style>@media print{body{font-size:10px}main{margin:0!important;padding:0!important}.panel{padding:8px!important;margin:0 0 8px!important}.table-wrap{overflow:visible}table{font-size:9px}th,td{padding:4px!important;font-size:9px;white-space:normal}thead{display:table-header-group}tr{break-inside:avoid}h2{font-size:15px}.muted{font-size:9px}}</style>
+{% endblock %}

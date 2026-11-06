@@ -1,0 +1,21 @@
+{% extends "mess/base.html" %}
+{% block title %}CO Dashboard{% endblock %}
+{% block content %}
+<div class="panel">
+<h2>Commanding Officer Dashboard</h2>
+<p class="muted">Dashboard overview of all messes assigned to your CO account. This account has view-only access.</p>
+<strong>{{ today|date:"d M Y" }}</strong> · Accounting cycle {{ start|date:"d M Y" }} to {{ end|date:"d M Y" }}
+</div>
+<div class="panel">
+<h2>Assigned messes ({{ mess_cards|length }})</h2>
+{% if mess_cards %}
+<div class="table-wrap"><table>
+<thead><tr><th>Mess</th><th>Active members</th><th>Stock value</th><th>Today's income</th><th>Today's consumption</th><th>Daily result</th><th>Zero stock items</th></tr></thead>
+<tbody>
+{% for card in mess_cards %}
+<tr><td><strong>{{ card.mess.name }}</strong></td><td>{{ card.members }}</td><td>₹{{ card.stock_value|floatformat:2 }}</td><td>₹{{ card.daily_income|floatformat:2 }}</td><td>₹{{ card.consumed_cost|floatformat:2 }}</td><td>₹{{ card.daily_result|floatformat:2 }}</td><td>{{ card.low_stock }}</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% else %}<p>No messes have been assigned to your CO account. Contact the Superuser.</p>{% endif %}
+</div>
+{% endblock %}
